@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane prefHeight="750.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.userapp.controller.DashboardController">
+   <left>
+      <!-- Sidebar Navigation -->
+      <VBox prefWidth="240.0" styleClass="sidebar" spacing="25.0" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets bottom="25.0" left="15.0" right="15.0" top="25.0" />
+         </padding>
+         <children>
+            <!-- Logo Agil Energy at top of sidebar -->
+            <ImageView fitHeight="70.0" fitWidth="210.0" preserveRatio="true">
+               <image>
+                  <Image url="@../images/logo.jpg" />
+               </image>
+            </ImageView>
+
+            <!-- User Profile Header -->
+            <HBox spacing="10.0" alignment="CENTER_LEFT">
+               <children>
+                   <StackPane prefHeight="50.0" prefWidth="50.0">
+                      <children>
+                         <Circle fx:id="sidebarAvatarCircle" fill="#e11d48" radius="25.0" />
+                         <Label fx:id="avatarLabel" text="U" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
+                         <ImageView fx:id="sidebarPhotoView" fitHeight="50.0" fitWidth="50.0" preserveRatio="false" smooth="true" visible="false">
+                            <clip>
+                               <Circle radius="25.0" centerX="25.0" centerY="25.0" />
+                            </clip>
+                         </ImageView>
+                      </children>
+                   </StackPane>
+                  <VBox spacing="2.0">
+                     <children>
+                        <Label fx:id="nameLabel" text="User Name" styleClass="text-regular" style="-fx-font-weight: bold;" />
+                        <StackPane alignment="CENTER_LEFT">
+                           <children>
+                              <HBox fx:id="badgeContainer" styleClass="role-badge" alignment="CENTER">
+                                 <children>
+                                    <Label fx:id="roleBadgeLabel" text="Role" styleClass="role-badge-text" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            
+            <!-- Navigation Links -->
+            <VBox fx:id="navMenu" spacing="10.0" VBox.vgrow="ALWAYS" style="-fx-padding: 20 0 0 0;">
+               <!-- Links will be added dynamically or pre-defined and toggled -->
+               <children>
+                  <Button fx:id="primaryMenuBtn" mnemonicParsing="false" onAction="#handlePrimaryMenu" prefHeight="40.0" prefWidth="210.0" text="Menu Principal">
+                     <styleClass>
+                        <String fx:value="button-sidebar-active" />
+                     </styleClass>
+                  </Button>
+                  <Button fx:id="profileMenuBtn" mnemonicParsing="false" onAction="#handleProfileMenu" prefHeight="40.0" prefWidth="210.0" text="Mon Profil">
+                     <styleClass>
+                        <String fx:value="button-sidebar" />
+                     </styleClass>
+                  </Button>
+               </children>
+            </VBox>
+            
+            <!-- Logout Button -->
+            <Button fx:id="logoutBtn" mnemonicParsing="false" onAction="#handleLogout" prefHeight="40.0" prefWidth="210.0" text="Se déconnecter">
+               <styleClass>
+                  <String fx:value="button-danger" />
+               </styleClass>
+            </Button>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <!-- Main Content Area -->
+      <VBox BorderPane.alignment="CENTER">
+         <children>
+            <!-- Header Bar -->
+            <HBox prefHeight="75.0" alignment="CENTER_LEFT" spacing="20.0" style="-fx-border-color: #1e293b; -fx-border-width: 0 0 1 0; -fx-padding: 15 20 15 20;">
+               <children>
+                  <Label fx:id="dashboardTitle" text="TABLEAU DE BORD" styleClass="text-subtitle" />
+                  <HBox HBox.hgrow="ALWAYS" />
+                  <Label fx:id="dateLabel" text="Date du jour" styleClass="text-regular" style="-fx-text-fill: #94a3b8;" />
+               </children>
+            </HBox>
+            
+            <!-- FXML view inject area -->
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

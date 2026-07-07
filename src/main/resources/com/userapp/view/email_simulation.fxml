@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+
+<VBox prefHeight="320.0" prefWidth="520.0" spacing="15.0" styleClass="gradient-bg" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.userapp.controller.EmailSimulationController">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <children>
+      <!-- Title -->
+      <Label fx:id="titleLabel" text="Envoi des coordonnées..." styleClass="text-subtitle" alignment="CENTER" maxWidth="Infinity" />
+      
+      <!-- Animation Canvas -->
+      <Pane fx:id="animPane" prefHeight="130.0" prefWidth="480.0" style="-fx-background-color: rgba(30, 41, 59, 0.4); -fx-background-radius: 12; -fx-border-color: #334155; -fx-border-radius: 12;">
+         <children>
+            <!-- Server Node -->
+            <Rectangle fx:id="serverNode" fill="#6366f1" height="50.0" rx="8.0" ry="8.0" width="65.0" x="40.0" y="40.0" />
+            <Label layoutX="46.0" layoutY="56.0" text="SERVEUR" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+            <Circle fx:id="serverLed" fill="#22c55e" radius="4.0" layoutX="72.0" layoutY="80.0" />
+            
+            <!-- Connection path -->
+            <Line endX="370.0" endY="65.0" startX="105.0" startY="65.0" stroke="#334155" strokeWidth="2.0" strokeDashArray="5,5" />
+            
+            <!-- Destination Node -->
+            <Rectangle fx:id="inboxNode" fill="#334155" height="50.0" rx="8.0" ry="8.0" width="65.0" x="375.0" y="40.0" />
+            <Label layoutX="389.0" layoutY="56.0" text="INBOX" textFill="WHITE" style="-fx-font-weight: bold; -fx-font-size: 11px;" />
+            
+            <!-- Flying Envelope (Initially hidden/located at server) -->
+            <Pane fx:id="envelope" layoutX="105.0" layoutY="55.0" prefHeight="20.0" prefWidth="32.0">
+               <children>
+                  <Rectangle fill="WHITE" height="20.0" rx="4.0" ry="4.0" stroke="#8b5cf6" strokeWidth="1.5" width="32.0" />
+                  <Line endX="16.0" endY="10.0" startX="0.0" startY="0.0" stroke="#8b5cf6" strokeWidth="1.5" />
+                  <Line endX="32.0" endY="0.0" startX="16.0" startY="10.0" stroke="#8b5cf6" strokeWidth="1.5" />
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+      
+      <!-- Footer Status and button -->
+      <VBox spacing="10.0" alignment="CENTER">
+         <children>
+            <Label fx:id="statusLabel" text="Préparation du message..." styleClass="text-muted" alignment="CENTER" />
+            <HBox alignment="CENTER" spacing="10.0">
+               <children>
+                  <Button fx:id="closeBtn" mnemonicParsing="false" onAction="#handleClose" prefHeight="35.0" prefWidth="120.0" text="Fermer" disable="true">
+                     <styleClass>
+                        <String fx:value="button-secondary" />
+                     </styleClass>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</VBox>
