@@ -9,6 +9,10 @@
             <div class="card-body p-5">
                 <h3 class="card-title text-center fw-bold text-primary mb-4">Créer un compte</h3>
 
+                {% for message in app.flashes('danger') %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% endfor %}
+
                 {{ form_start(registrationForm) }}
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -36,6 +40,11 @@
                         </div>
                     </div>
 
+                    {# reCAPTCHA v2 #}
+                    <div class="mb-3 d-flex justify-content-center">
+                        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                    </div>
+
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-lg">S'inscrire</button>
                     </div>
@@ -48,4 +57,6 @@
         </div>
     </div>
 </div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
