@@ -203,6 +203,13 @@ class AdminController extends AbstractController
             $pass = trim($request->request->get('password'));
 
             if (!empty($email) && !empty($nom)) {
+                // Vérifier que l'email n'est pas déjà utilisé par un autre utilisateur
+                $existingUser = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+                if ($existingUser && $existingUser->getId() !== $user->getId()) {
+                    $this->addFlash('danger', 'Cet email est déjà utilisé par un autre compte.');
+                    return $this->render('admin/user_form.html.twig', ['user' => $user]);
+                }
+
                 $user->setEmail($email);
                 $user->setNom($nom);
                 $user->setPrenom($prenom);
