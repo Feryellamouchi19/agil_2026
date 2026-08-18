@@ -10,6 +10,7 @@ use App\Repository\ServiceRepository;
 use App\Repository\TicketRepository;
 use App\Service\QueueManager;
 use App\Service\QrCodeGenerator;
+use App\Service\SmsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -28,7 +29,8 @@ class ClientController extends AbstractController
         ServiceRepository $serviceRepo,
         EntityManagerInterface $em,
         QueueManager $queueManager,
-        QrCodeGenerator $qrGenerator
+        QrCodeGenerator $qrGenerator,
+        SmsService $smsService
     ): Response {
         $services = $serviceRepo->findAll();
 
@@ -74,6 +76,9 @@ class ClientController extends AbstractController
             $ticket->setQrCode($qrDataUri);
 
             $em->flush();
+
+            // Envoi du SMS au client
+            $smsService->sendTicketSms($ticket);
 
             $this->addFlash('success', 'Votre ticket ' . $numero . ' a été créé ! Vous êtes en position ' . $queueManager->getQueuePosition($ticket) . ' dans la file.');
 
