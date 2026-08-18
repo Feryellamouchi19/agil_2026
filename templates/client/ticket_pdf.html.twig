@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket AGIL - {{ ticket.numeroTicket }}</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            text-align: center;
+            color: #333;
+        }
+        .header {
+            border-bottom: 2px solid #004d99;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #004d99;
+        }
+        .sub-logo {
+            font-size: 10px;
+            color: #666;
+        }
+        .service-title {
+            background-color: #ffcc00;
+            color: #000;
+            padding: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .ticket-number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #004d99;
+            margin: 15px 0;
+        }
+        .meta-info {
+            font-size: 12px;
+            margin: 5px 0;
+            color: #555;
+        }
+        .qr-code {
+            margin: 15px 0;
+        }
+        .footer-msg {
+            font-style: italic;
+            font-size: 11px;
+            color: #777;
+            margin-top: 20px;
+            border-top: 1px dashed #ccc;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">AGIL</div>
+        <div class="sub-logo">Société Nationale de Distribution des Pétroles</div>
+    </div>
+
+    <div class="service-title">
+        {{ ticket.service.nomService }}
+    </div>
+
+    <div class="ticket-number">
+        {{ ticket.numeroTicket }}
+    </div>
+
+    <div class="meta-info">
+        <strong>Date :</strong> {{ ticket.heureCreation|date('d/m/Y') }} &nbsp;|&nbsp; <strong>Heure :</strong> {{ ticket.heureCreation|date('H:i') }}
+    </div>
+    <div class="meta-info">
+        <strong>Temps estimé :</strong> ~{{ ticket.tempsEstime }} minutes
+    </div>
+
+    {% if ticket.qrCode %}
+    <div class="qr-code">
+        <img src="{{ ticket.qrCode }}" width="140" height="140">
+    </div>
+    {% endif %}
+
+    <div class="footer-msg">
+        Merci pour votre visite chez AGIL.
+    </div>
+
+</body>
+</html>

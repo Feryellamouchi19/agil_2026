@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Répondre à la Réclamation - AGIL{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-warning text-dark py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-reply-fill me-2"></i>Traiter la Réclamation N°{{ reclamation.id }}</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3 p-3 bg-light rounded-3">
+                    <p class="mb-1"><strong>Client :</strong> {{ reclamation.client.prenom }} {{ reclamation.client.nom }} ({{ reclamation.client.email }})</p>
+                    <p class="mb-1"><strong>Date :</strong> {{ reclamation.dateCreation|date('d/m/Y H:i') }}</p>
+                    <p class="mb-1"><strong>Objet :</strong> {{ reclamation.sujet }}</p>
+                    <hr>
+                    <p class="mb-0 text-muted"><strong>Description :</strong><br>{{ reclamation.description|nl2br }}</p>
+                </div>
+
+                <form method="post" action="{{ path('app_admin_reclamation_reply', {id: reclamation.id}) }}">
+                    <div class="mb-3">
+                        <label for="statut" class="form-label fw-bold">Statut de la réclamation</label>
+                        <select id="statut" name="statut" class="form-select">
+                            <option value="En cours" {% if reclamation.statut == 'En cours' %}selected{% endif %}>En cours</option>
+                            <option value="Résolu" {% if reclamation.statut == 'Résolu' %}selected{% endif %}>Résolu</option>
+                            <option value="Fermé" {% if reclamation.statut == 'Fermé' %}selected{% endif %}>Fermé</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="reponse" class="form-label fw-bold">Votre Réponse officielle AGIL *</label>
+                        <textarea id="reponse" name="reponse" class="form-control" rows="5" placeholder="Rédigez la réponse à transmettre au client..." required>{{ reclamation.reponse }}</textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ path('app_admin_reclamations') }}" class="btn btn-outline-secondary rounded-pill px-4">Retour</a>
+                        <button type="submit" class="btn btn-warning text-dark rounded-pill px-4 fw-bold">Enregistrer la réponse</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Guichets - Admin AGIL{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm border-0 rounded-3 mt-3">
+    <div class="card-header bg-primary text-white p-3">
+        <h4 class="mb-0 fw-bold"><i class="bi bi-display me-2"></i>Gestion des Guichets &amp; Affectations</h4>
+    </div>
+
+    {# Search & Filter Bar #}
+    <div class="card-body border-bottom pb-3">
+        <form method="get" action="{{ path('app_admin_guichets') }}" class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-search me-1"></i>Recherche</label>
+                <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm shadow-none" placeholder="N° guichet, agiliste, service...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-grid me-1"></i>Service</label>
+                <select name="service_id" class="form-select form-select-sm shadow-none">
+                    <option value="">Tous les services</option>
+                    {% for s in services %}
+                        <option value="{{ s.id }}" {% if serviceId == s.id %}selected{% endif %}>{{ s.nomService }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-toggle-on me-1"></i>Statut</label>
+                <select name="statut" class="form-select form-select-sm shadow-none">
+                    <option value="">Tous</option>
+                    <option value="Ouvert" {% if statut == 'Ouvert' %}selected{% endif %}>Ouvert</option>
+                    <option value="Fermé" {% if statut == 'Fermé' %}selected{% endif %}>Fermé</option>
+                    <option value="En pause" {% if statut == 'En pause' %}selected{% endif %}>En pause</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3 flex-fill">
+                    <i class="bi bi-funnel-fill me-1"></i>Filtrer
+                </button>
+                {% if q or statut or serviceId %}
+                    <a href="{{ path('app_admin_guichets') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-2" title="Réinitialiser">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+        {% if q or statut or serviceId %}
+        <div class="mt-2">
+            <small class="text-muted"><i class="bi bi-info-circle me-1"></i>{{ guichets|length }} guichet(s) affiché(s)</small>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>N° Guichet</th>
+                        <th>Service Assigné</th>
+                        <th>Agiliste Affecté</th>
+                        <th>Statut</th>
+                        <th class="text-end">Mettre à jour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in guichets %}
+                    <tr>
+                        <form method="post" action="{{ path('app_admin_guichet_update') }}">
+                            <input type="hidden" name="guichet_id" value="{{ g.id }}">
+                            <td class="fw-bold text-primary fs-5">{{ g.numero }}</td>
+                            <td>
+                                <select name="service_id" class="form-select form-select-sm">
+                                    <option value="">-- Aucun --</option>
+                                    {% for s in services %}
+                                        <option value="{{ s.id }}" {% if g.typeService and g.typeService.id == s.id %}selected{% endif %}>
+                                            {{ s.nomService }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="agiliste_id" class="form-select form-select-sm">
+                                    <option value="">-- Aucun --</option>
+                                    {% for a in agilistes %}
+                                        <option value="{{ a.id }}" {% if g.agiliste and g.agiliste.id == a.id %}selected{% endif %}>
+                                            {{ a.prenom }} {{ a.nom }} ({{ a.email }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="statut" class="form-select form-select-sm">
+                                    <option value="Ouvert" {% if g.statut == 'Ouvert' %}selected{% endif %}>Ouvert</option>
+                                    <option value="Fermé" {% if g.statut == 'Fermé' %}selected{% endif %}>Fermé</option>
+                                    <option value="En pause" {% if g.statut == 'En pause' %}selected{% endif %}>En pause</option>
+                                </select>
+                            </td>
+                            <td class="text-end">
+                                <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">
+                                    <i class="bi bi-save me-1"></i> Enregistrer
+                                </button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-display display-6 d-block mb-2"></i>
+                            Aucun guichet trouvé.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

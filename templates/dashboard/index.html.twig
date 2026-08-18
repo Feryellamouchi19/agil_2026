@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Client - AGIL Queue{% endblock %}
+
+{% block body %}
+<div class="row mt-3 g-4">
+    <!-- Bienvenue Client -->
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-4 bg-primary text-white p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1 text-warning"><i class="bi bi-person-fill me-2"></i>Bienvenue {{ app.user.prenom }} {{ app.user.nom }}</h3>
+                    <p class="mb-0 opacity-75">Bienvenue dans votre espace client AGIL. Gérez vos tickets, rendez-vous et réclamations.</p>
+                </div>
+                <div>
+                    <a href="{{ path('app_client_take_ticket') }}" class="btn btn-warning text-dark btn-lg rounded-pill fw-bold shadow-sm">
+                        <i class="bi bi-ticket-perforated-fill me-2"></i> prendre un nouveau ticket
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Rapides -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 text-center h-100 p-4">
+            <i class="bi bi-ticket-detailed text-primary display-4 mb-3"></i>
+            <h5 class="fw-bold">Nouveau Ticket</h5>
+            <p class="text-muted small">Sélectionnez un service AGIL et obtenez votre numéro de passage.</p>
+            <a href="{{ path('app_client_take_ticket') }}" class="btn btn-outline-primary rounded-pill mt-auto">Prendre un ticket</a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 text-center h-100 p-4">
+            <i class="bi bi-calendar-event text-success display-4 mb-3"></i>
+            <h5 class="fw-bold">Rendez-vous Gérant</h5>
+            <p class="text-muted small">Planifiez une rencontre directe avec le gérant de la station.</p>
+            <a href="{{ path('app_client_rv_new') }}" class="btn btn-outline-success rounded-pill mt-auto">Demander rendez-vous</a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 text-center h-100 p-4">
+            <i class="bi bi-chat-square-text text-warning display-4 mb-3"></i>
+            <h5 class="fw-bold">Réclamation</h5>
+            <p class="text-muted small">Soumettez une remarque ou réclamation à nos services.</p>
+            <a href="{{ path('app_client_reclamation_new') }}" class="btn btn-outline-warning text-dark rounded-pill mt-auto">Déposer une réclamation</a>
+        </div>
+    </div>
+
+    <!-- Tickets Actifs -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-hourglass-split me-2"></i>Vos Tickets Actifs</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if activeTickets is empty %}
+                    <div class="p-4 text-center text-muted">
+                        Aucun ticket en cours pour le moment.
+                    </div>
+                {% else %}
+                    <ul class="list-group list-group-flush">
+                        {% for t in activeTickets %}
+                            <li class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="fw-bold text-primary mb-0">{{ t.numeroTicket }}</h5>
+                                    <small class="text-muted">{{ t.service.nomService }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill mb-1 d-inline-block">{{ t.statut }}</span>
+                                    <br>
+                                    <a href="{{ path('app_client_ticket_view', {id: t.id}) }}" class="btn btn-sm btn-link p-0 text-decoration-none">Voir détails &rarr;</a>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Historique des Tickets -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="fw-bold mb-0 text-secondary"><i class="bi bi-clock-history me-2"></i>Historique Récent</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if pastTickets is empty %}
+                    <div class="p-4 text-center text-muted">
+                        Aucun historique récent.
+                    </div>
+                {% else %}
+                    <ul class="list-group list-group-flush">
+                        {% for t in pastTickets %}
+                            <li class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-bold me-2">{{ t.numeroTicket }}</span>
+                                    <small class="text-muted">{{ t.service.nomService }} ({{ t.heureCreation|date('d/m/Y') }})</small>
+                                </div>
+                                <span class="badge {% if t.statut == 'Terminé' %}bg-success{% else %}bg-secondary{% endif %} rounded-pill">
+                                    {{ t.statut }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Vos Rendez-vous et Réclamations -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="fw-bold mb-0 text-success"><i class="bi bi-calendar-check me-2"></i>Vos Rendez-vous</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if rendezvousList is empty %}
+                    <div class="p-4 text-center text-muted">Aucun rendez-vous.</div>
+                {% else %}
+                    <ul class="list-group list-group-flush">
+                        {% for rv in rendezvousList %}
+                            <li class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ rv.sujet }}</strong><br>
+                                    <small class="text-muted">{{ rv.dateRv|date('d/m/Y') }} à {{ rv.heureRv|date('H:i') }}</small>
+                                </div>
+                                <span class="badge {% if rv.statut == 'Accepté' %}bg-success{% elseif rv.statut == 'Refusé' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                    {{ rv.statut }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white py-3 border-0">
+                <h5 class="fw-bold mb-0 text-warning"><i class="bi bi-chat-square-dots me-2"></i>Vos Réclamations</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if reclamations is empty %}
+                    <div class="p-4 text-center text-muted">Aucune réclamation.</div>
+                {% else %}
+                    <ul class="list-group list-group-flush">
+                        {% for r in reclamations %}
+                            <li class="list-group-item p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong>{{ r.sujet }}</strong>
+                                    <span class="badge {% if r.statut == 'Résolu' %}bg-success{% else %}bg-info text-dark{% endif %}">{{ r.statut }}</span>
+                                </div>
+                                {% if r.reponse %}
+                                    <div class="p-2 bg-light rounded small mt-2">
+                                        <strong>Réponse AGIL :</strong> {{ r.reponse }}
+                                    </div>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

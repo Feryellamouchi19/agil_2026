@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Administration & Gérance - AGIL Queue{% endblock %}
+
+{% block body %}
+<div class="row mt-3 g-4">
+    <!-- En-tête -->
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h3 class="fw-bold text-primary mb-1">
+                        <i class="bi bi-speedometer2 me-2"></i>Tableau de Bord Général AGIL
+                    </h3>
+                    <p class="text-muted mb-0">Statistiques et supervision en temps réel des files d'attente et services.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    {% if is_granted('ROLE_ADMIN') %}
+    <a href="{{ path('app_admin_users') }}" class="btn btn-outline-primary rounded-pill"><i class="bi bi-people me-1"></i> Utilisateurs</a>
+    <a href="{{ path('app_admin_logs') }}" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-shield-lock me-1"></i> Logs</a>
+{% endif %}
+{% if is_granted('ROLE_GERANT') %}
+    <a href="{{ path('app_admin_guichets') }}" class="btn btn-primary rounded-pill"><i class="bi bi-display me-1"></i> Guichets</a>
+    <a href="{{ path('app_admin_reclamations') }}" class="btn btn-warning text-dark rounded-pill"><i class="bi bi-chat-left-text me-1"></i> Réclamations</a>
+    <a href="{{ path('app_admin_rendezvous') }}" class="btn btn-success rounded-pill"><i class="bi bi-calendar-check me-1"></i> Rendez‑vous</a>
+    <a href="{{ path('google_calendar_events') }}" class="btn btn-outline-success rounded-pill"><i class="bi bi-google me-1"></i> Google Calendar</a>
+    <a href="{{ path('connect_google_calendar_start') }}" class="btn btn-outline-dark rounded-pill"><i class="bi bi-link-45deg me-1"></i> Connecter Google</a>
+{% endif %}              </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cartes Statistiques Principales -->
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+            <i class="bi bi-ticket-perforated display-4 text-primary mb-2"></i>
+            <h2 class="fw-bold mb-0">{{ todayTickets }}</h2>
+            <div class="text-muted small">Tickets du jour</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+            <i class="bi bi-check-circle-fill display-4 text-success mb-2"></i>
+            <h2 class="fw-bold mb-0">{{ todayFinishedTickets }}</h2>
+            <div class="text-muted small">Tickets traités aujourd'hui</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+            <i class="bi bi-hourglass-split display-4 text-warning mb-2"></i>
+            <h2 class="fw-bold mb-0">{{ todayWaitingTickets }}</h2>
+            <div class="text-muted small">Tickets actuellement en attente</div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+            <i class="bi bi-people-fill display-4 text-info mb-2"></i>
+            <h2 class="fw-bold mb-0">{{ totalClients }}</h2>
+            <div class="text-muted small">Clients enregistrés</div>
+        </div>
+    </div>
+
+    <!-- Deuxième ligne statistiques -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <i class="bi bi-person-badge display-5 text-primary mb-2"></i>
+            <h3 class="fw-bold">{{ totalAgilistes }}</h3>
+            <p class="text-muted mb-0">Agilistes de guichet</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <i class="bi bi-calendar-event display-5 text-success mb-2"></i>
+            <h3 class="fw-bold">{{ totalRendezVous }}</h3>
+            <p class="text-muted mb-0">Demandes de Rendez-vous</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+            <i class="bi bi-chat-square-dots display-5 text-warning mb-2"></i>
+            <h3 class="fw-bold">{{ totalReclamations }}</h3>
+            <p class="text-muted mb-0">Réclamations clients</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

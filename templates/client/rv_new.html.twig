@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demande de Rendez-vous - AGIL{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-success text-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Demander un Rendez-vous avec le Gérant</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" action="{{ path('app_client_rv_new') }}">
+                    <div class="mb-3">
+                        <label for="sujet" class="form-label fw-semibold">Sujet du Rendez-vous *</label>
+                        <input type="text" id="sujet" name="sujet" class="form-control" placeholder="Ex: Réclamation contrat, Carte carburant entreprise..." required>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="date_rv" class="form-label fw-semibold">Date souhaitée *</label>
+                            <input type="date" id="date_rv" name="date_rv" class="form-control" min="{{ "now"|date('Y-m-d') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="heure_rv" class="form-label fw-semibold">Heure souhaitée *</label>
+                            <input type="time" id="heure_rv" name="heure_rv" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="commentaire" class="form-label fw-semibold">Commentaires / Détails</label>
+                        <textarea id="commentaire" name="commentaire" class="form-control" rows="4" placeholder="Précisez votre demande..."></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Annuler</a>
+                        <button type="submit" class="btn btn-success rounded-pill px-4">Envoyer la demande</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

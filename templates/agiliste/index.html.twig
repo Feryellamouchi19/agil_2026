@@ -1,0 +1,205 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Agiliste - Guichet AGIL{% endblock %}
+
+{% block stylesheets %}
+<meta http-equiv="refresh" content="15">
+{% endblock %}
+
+{% block body %}
+<div class="row mt-3 g-4">
+    <!-- Barre Supérieure Guichet & Statistiques -->
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                    <h3 class="fw-bold text-primary mb-1">
+                        <i class="bi bi-person-badge-fill me-2"></i>Espace Agiliste
+                    </h3>
+                    {% if guichet %}
+                        <p class="text-muted mb-0">
+                            Guichet N° <strong>{{ guichet.numero }}</strong>
+                            &nbsp;|&nbsp;
+                            <i class="bi bi-people-fill me-1 text-primary"></i>
+                            <strong>{{ totalWaiting }}</strong> client(s) en attente dans la file
+                        </p>
+                    {% else %}
+                        <p class="text-danger mb-0">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            Aucun guichet ne vous est actuellement attribué. Contactez un administrateur.
+                        </p>
+                    {% endif %}
+                </div>
+
+                {% if guichet %}
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-end">
+                        <span class="small text-muted d-block">Statut Guichet</span>
+                        {% if guichet.statut == 'Ouvert' %}
+                            <span class="badge bg-success fs-6"><i class="bi bi-circle-fill text-white me-1"></i>Ouvert</span>
+                        {% else %}
+                            <span class="badge bg-secondary fs-6">Fermé</span>
+                        {% endif %}
+                    </div>
+
+                    <a href="{{ path('app_agiliste_toggle_guichet') }}" class="btn btn-outline-dark rounded-pill">
+                        {% if guichet.statut == 'Ouvert' %}
+                            <i class="bi bi-power me-1 text-danger"></i> Fermer le guichet
+                        {% else %}
+                            <i class="bi bi-power me-1 text-success"></i> Ouvrir le guichet
+                        {% endif %}
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if guichet %}
+    <!-- Colonne Gauche : Ticket Actuel -->
+    <div class="col-md-7">
+        <!-- Carte Ticket en Cours -->
+        <div class="card shadow-sm border-0 rounded-4 mb-4">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-workspace me-2"></i>Client au Guichet</h5>
+            </div>
+            <div class="card-body p-4 text-center">
+                {% if currentTicket %}
+                    <span class="badge bg-warning text-dark px-3 py-2 fs-6 rounded-pill mb-2">
+                        Statut : {{ currentTicket.statut }}
+                    </span>
+                    <div class="display-1 fw-extrabold text-primary my-2">
+                        {{ currentTicket.numeroTicket }}
+                    </div>
+                    <p class="text-muted mb-1">
+                        Client : <strong>{{ currentTicket.client.prenom }} {{ currentTicket.client.nom }}</strong><br>
+                        Tél : {{ currentTicket.client.telephone ?? 'Non renseigné' }}
+                    </p>
+                    {% if currentTicket.service %}
+                    <p class="mb-3">
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-2">
+                            <i class="bi bi-tag-fill me-1"></i> Besoin : {{ currentTicket.service.nomService }}
+                        </span>
+                    </p>
+                    {% endif %}
+
+                    <!-- Actions Agiliste -->
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        {% if currentTicket.statut == 'Appelé' %}
+                            <a href="{{ path('app_agiliste_ticket_action', {id: currentTicket.id, action: 'start'}) }}" class="btn btn-info btn-lg text-dark rounded-pill px-4">
+                                <i class="bi bi-play-fill me-1"></i> Démarrer le service
+                            </a>
+                        {% endif %}
+
+                        {% if currentTicket.statut == 'En cours' %}
+                            <a href="{{ path('app_agiliste_ticket_action', {id: currentTicket.id, action: 'finish'}) }}" class="btn btn-success btn-lg rounded-pill px-4">
+                                <i class="bi bi-check-circle-fill me-1"></i> Terminer le ticket
+                            </a>
+                        {% endif %}
+
+                        <a href="{{ path('app_agiliste_ticket_action', {id: currentTicket.id, action: 'hold'}) }}" class="btn btn-outline-warning rounded-pill px-3">
+                            <i class="bi bi-arrow-return-left me-1"></i> Remettre en file
+                        </a>
+                        <a href="{{ path('app_agiliste_ticket_action', {id: currentTicket.id, action: 'cancel'}) }}" class="btn btn-outline-danger rounded-pill px-3" onclick="return confirm('Annuler ce ticket ?');">
+                            <i class="bi bi-x-circle-fill me-1"></i> Annuler
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="py-4">
+                        <i class="bi bi-person-slash display-3 text-muted mb-3 d-block"></i>
+                        <p class="text-muted">Aucun client n'est actuellement au guichet.</p>
+                        <a href="{{ path('app_agiliste_call_next') }}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
+                            <i class="bi bi-megaphone-fill me-2 text-warning"></i> Appeler le client suivant
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Si un ticket est en cours, proposer "Appeler suivant" après terminaison #}
+            {% if currentTicket and currentTicket.statut == 'En cours' %}
+            <div class="card-footer text-center bg-light border-0 py-3">
+                <p class="text-muted small mb-1"><i class="bi bi-info-circle me-1"></i>Terminez le ticket actuel pour appeler le suivant.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Mini Statistiques de l'Agiliste -->
+        <div class="row g-3">
+            <div class="col-6">
+                <div class="card shadow-sm border-0 rounded-3 text-center p-3">
+                    <i class="bi bi-person-check-fill display-5 text-success mb-1"></i>
+                    <div class="fs-3 fw-bold">{{ todayServedCount }}</div>
+                    <div class="small text-muted">Clients servis aujourd'hui</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card shadow-sm border-0 rounded-3 text-center p-3">
+                    <i class="bi bi-clock-history display-5 text-info mb-1"></i>
+                    <div class="fs-3 fw-bold">{{ avgDuration }} min</div>
+                    <div class="small text-muted">Temps moyen de traitement</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Colonne Droite : File d'attente GLOBALE -->
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-list-ol me-2 text-warning"></i>File d'attente globale
+                </h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-warning text-dark rounded-pill">{{ totalWaiting }} en attente</span>
+                    <span class="badge bg-secondary">Auto 15s</span>
+                </div>
+            </div>
+            <div class="card-body p-0" style="max-height: 480px; overflow-y: auto;">
+                {% if waitingTickets is empty %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-check2-circle display-4 mb-2 d-block text-success"></i>
+                        File d'attente vide. Tous les clients sont servis !
+                    </div>
+                {% else %}
+                    <ul class="list-group list-group-flush">
+                        {% for i, ticket in waitingTickets %}
+                            <li class="list-group-item p-3 d-flex justify-content-between align-items-start {% if i == 0 %}border-start border-4 border-warning{% endif %}">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="badge bg-secondary rounded-pill">{{ i + 1 }}</span>
+                                        <h5 class="fw-bold text-primary mb-0">{{ ticket.numeroTicket }}</h5>
+                                        {% if i == 0 %}
+                                            <span class="badge bg-warning text-dark">Suivant</span>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted d-block">
+                                        <i class="bi bi-person me-1"></i>{{ ticket.client.prenom }} {{ ticket.client.nom }}
+                                    </small>
+                                    {% if ticket.service %}
+                                    <small class="text-primary">
+                                        <i class="bi bi-tag me-1"></i>{{ ticket.service.nomService }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="bi bi-clock me-1"></i>{{ ticket.heureCreation|date('H:i') }}
+                                    </span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            {% if guichet.statut == 'Ouvert' and not currentTicket and waitingTickets is not empty %}
+            <div class="card-footer text-center bg-light border-0 py-3">
+                <a href="{{ path('app_agiliste_call_next') }}" class="btn btn-warning fw-bold rounded-pill px-4">
+                    <i class="bi bi-megaphone-fill me-2"></i>Appeler le suivant ({{ waitingTickets|first.numeroTicket }})
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

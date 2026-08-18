@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - AGIL Queue{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="card-header bg-primary text-white p-4 text-center position-relative">
+                <div class="mb-3 position-relative d-inline-block">
+                    {% if user.photo and user.photo != 'default.png' %}
+                        <img src="{{ asset('uploads/profiles/' ~ user.photo) }}" alt="Photo de profil" class="rounded-circle shadow border border-3 border-white object-fit-cover" style="width: 110px; height: 110px;">
+                    {% else %}
+                        <div class="bg-warning text-dark rounded-circle d-inline-flex align-items-center justify-content-center shadow border border-3 border-white" style="width: 110px; height: 110px; font-size: 3rem; font-weight: bold;">
+                            {{ user.prenom|slice(0, 1)|upper }}{{ user.nom|slice(0, 1)|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+                <h3 class="fw-bold mb-1 text-warning">{{ user.prenom }} {{ user.nom }}</h3>
+                <p class="mb-0 opacity-75"><i class="bi bi-envelope me-1"></i> {{ user.email }}</p>
+                <div class="mt-2">
+                    {% if 'ROLE_ADMIN' in user.roles %}
+                        <span class="badge bg-danger fs-6 rounded-pill">Administrateur</span>
+                    {% elseif 'ROLE_GERANT' in user.roles %}
+                        <span class="badge bg-success fs-6 rounded-pill">Gérant</span>
+                    {% elseif 'ROLE_AGILISTE' in user.roles %}
+                        <span class="badge bg-info text-dark fs-6 rounded-pill">Agiliste</span>
+                    {% else %}
+                        <span class="badge bg-light text-dark fs-6 rounded-pill">Client</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible fade show rounded-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <form method="post" enctype="multipart/form-data">
+                    <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-image me-2"></i>Photo de Profil</h5>
+                    <div class="mb-4 p-3 bg-light rounded-3">
+                        <label for="photo" class="form-label fw-bold small text-muted">Télécharger une nouvelle photo de profil</label>
+                        <input type="file" id="photo" name="photo" class="form-control" accept="image/*">
+                        <small class="form-text text-muted">Formats acceptés : JPG, PNG, WEBP, SVG.</small>
+                    </div>
+
+                    <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-person-badge me-2"></i>Informations Personnelles</h5>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="nom" class="form-label">Nom *</label>
+                            <input type="text" id="nom" name="nom" class="form-control" value="{{ user.nom }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="prenom" class="form-label">Prénom *</label>
+                            <input type="text" id="prenom" name="prenom" class="form-control" value="{{ user.prenom }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Adresse Email</label>
+                        <input type="email" id="email" class="form-control bg-light" value="{{ user.email }}" readonly disabled>
+                        <small class="text-muted">L'adresse email ne peut pas être modifiée.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="telephone" class="form-label">Numéro de Téléphone</label>
+                        <input type="text" id="telephone" name="telephone" class="form-control" value="{{ user.telephone }}">
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-lock me-2"></i>Sécurité</h5>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Nouveau Mot de Passe</label>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Laisser vide pour ne pas modifier">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="bi bi-arrow-left me-1"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold">
+                            <i class="bi bi-check-circle me-1"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

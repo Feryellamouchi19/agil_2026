@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prendre un Ticket - AGIL Queue{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .service-card {
+        cursor: pointer;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .service-card:hover, .service-card.selected {
+        border-color: #1d4ed8;
+        box-shadow: 0 0 0 3px rgba(29,78,216,.15);
+        transform: translateY(-2px);
+    }
+    .service-card.selected { background: #eff6ff; }
+    #bon-value-section {
+        display: none;
+        animation: fadeIn .3s ease;
+    }
+    #bon-value-section.visible { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-9">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-primary text-white py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-ticket-perforated-fill me-2 text-warning"></i>Sélectionnez un Service AGIL</h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted mb-4">Choisissez la prestation souhaitée pour obtenir votre numéro de ticket et votre temps d'attente estimé.</p>
+
+                <form method="post" action="{{ path('app_client_take_ticket') }}" id="ticket-form">
+                    <input type="hidden" name="service_id" id="selected-service-id" value="">
+
+                    <div class="row g-3 mb-4">
+                        {% for service in services %}
+                        <div class="col-md-4">
+                            <div class="card h-100 service-card"
+                                 data-id="{{ service.id }}"
+                                 data-type="{{ service.type }}"
+                                 onclick="selectService(this)">
+                                <div class="card-body text-center p-4">
+                                    <div class="display-5 mb-3">
+                                        {% if service.type == 'CARTE_PETROLIERE' %}
+                                            <i class="bi bi-credit-card-2-front-fill text-primary"></i>
+                                        {% elseif service.type == 'BON_VALEUR' %}
+                                            <i class="bi bi-cash-coin text-success"></i>
+                                        {% else %}
+                                            <i class="bi bi-card-heading text-warning"></i>
+                                        {% endif %}
+                                    </div>
+                                    <h5 class="fw-bold">{{ service.nomService }}</h5>
+                                    <p class="text-muted small">{{ service.description }}</p>
+                                    <span class="badge bg-light text-dark"><i class="bi bi-clock me-1"></i>~{{ service.dureeMoyenne }} min / client</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    {# Champ valeur — visible uniquement pour Bon valeur #}
+                    <div id="bon-value-section" class="mb-4">
+                        <label for="bon_value" class="form-label fw-semibold">
+                            <i class="bi bi-cash-coin text-success me-1"></i>Valeur du bon (DT)
+                        </label>
+                        <input type="number"
+                               id="bon_value"
+                               name="bon_value"
+                               class="form-control form-control-lg rounded-pill"
+                               placeholder="Ex: 200"
+                               min="1" step="0.01"
+                               style="max-width:260px">
+                        <div class="form-text text-muted">1 DT = 1 point de fidélité 🌟</div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn btn-primary btn-lg rounded-pill px-5" disabled>
+                        <i class="bi bi-ticket-perforated-fill me-2"></i>Prendre mon ticket
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectService(card) {
+    document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+
+    const id   = card.dataset.id;
+    const type = card.dataset.type;
+
+    document.getElementById('selected-service-id').value = id;
+    document.getElementById('submit-btn').disabled = false;
+
+    const bonSection = document.getElementById('bon-value-section');
+    const bonInput   = document.getElementById('bon_value');
+
+    if (type === 'BON_VALEUR') {
+        bonSection.classList.add('visible');
+        bonInput.required = true;
+    } else {
+        bonSection.classList.remove('visible');
+        bonInput.required = false;
+        bonInput.value = '';
+    }
+}
+</script>
+{% endblock %}

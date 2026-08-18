@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenue chez AGIL - Gestion de File d'Attente et Rendez-vous{% endblock %}
+
+{% block body %}
+<div class="row align-items-center justify-content-center text-center mt-4 pt-3">
+    <div class="col-md-9">
+        <div class="mb-4">
+            <span class="badge bg-warning text-dark px-3 py-2 fs-6 rounded-pill fw-bold">Société Nationale de Distribution des Pétroles</span>
+        </div>
+        <h1 class="display-3 fw-bold text-primary mb-4">File d'Attente & Rendez-vous AGIL</h1>
+        <p class="lead text-muted mb-5">Digitalisez vos démarches chez AGIL. Prenez un ticket virtuel, suivez votre position en temps réel, réservez un rendez-vous avec le gérant et déposez vos réclamations sans faire la queue.</p>
+        
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg px-5 shadow rounded-pill">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Se connecter
+            </a>
+            <a href="{{ path('app_register') }}" class="btn btn-outline-secondary btn-lg px-5 rounded-pill">
+                Créer un compte
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5 pt-4 text-center">
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100 feature-card p-4 rounded-4">
+            <div class="card-body">
+                <i class="bi bi-ticket-perforated text-warning display-3 mb-3 d-block"></i>
+                <h4 class="fw-bold">Tickets Virtuels & QR Code</h4>
+                <p class="text-muted">Obtenez un ticket automatique (Carte pétrolière, Bon de valeur, Carte Bons), téléchargez le PDF et suivez votre rang via le QR Code.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100 feature-card p-4 rounded-4">
+            <div class="card-body">
+                <i class="bi bi-calendar-check text-success display-3 mb-3 d-block"></i>
+                <h4 class="fw-bold">Prise de Rendez-vous</h4>
+                <p class="text-muted">Prenez rendez-vous directement avec le gérant de station selon vos disponibilités.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100 feature-card p-4 rounded-4">
+            <div class="card-body">
+                <i class="bi bi-chat-square-text text-info display-3 mb-3 d-block"></i>
+                <h4 class="fw-bold">Service Client & Réclamations</h4>
+                <p class="text-muted">Soumettez vos remarques et obtenez des réponses officielles directement depuis votre espace.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

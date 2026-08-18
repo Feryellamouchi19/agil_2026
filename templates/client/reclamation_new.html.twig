@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Déposer une Réclamation - AGIL{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-header bg-warning text-dark py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-chat-square-text me-2"></i>Soumettre une Réclamation</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" action="{{ path('app_client_reclamation_new') }}">
+                    <div class="mb-3">
+                        <label for="sujet" class="form-label fw-semibold">Objet de la réclamation *</label>
+                        <input type="text" id="sujet" name="sujet" class="form-control" placeholder="Ex: Problème carte pétrolière, Temps d'attente trop long..." required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="description" class="form-label fw-semibold">Description détaillée *</label>
+                        <textarea id="description" name="description" class="form-control" rows="5" placeholder="Décrivez en détail la nature de votre problème..." required></textarea>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">Annuler</a>
+                        <button type="submit" class="btn btn-warning text-dark rounded-pill px-4 fw-bold">Soumettre</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

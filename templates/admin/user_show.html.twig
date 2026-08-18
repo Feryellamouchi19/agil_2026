@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ user.prenom }} {{ user.nom }} - Admin AGIL{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow border-0 rounded-4 overflow-hidden">
+            <div class="card-header bg-primary text-white p-4 text-center position-relative">
+                <div class="mb-3">
+                    {% if user.photo and user.photo != 'default.png' %}
+                        <img src="{{ asset('uploads/profiles/' ~ user.photo) }}" alt="Photo de profil" class="rounded-circle shadow-sm border border-3 border-white object-fit-cover" style="width: 90px; height: 90px;">
+                    {% else %}
+                        <div class="bg-white text-primary rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm border border-3 border-white" style="width: 90px; height: 90px; font-size: 2.5rem; font-weight: bold;">
+                            {{ user.prenom|slice(0, 1)|upper }}{{ user.nom|slice(0, 1)|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+                <h3 class="fw-bold mb-1">{{ user.prenom }} {{ user.nom }}</h3>
+                <p class="mb-0 text-white-50"><i class="bi bi-envelope me-1"></i> {{ user.email }}</p>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block uppercase fw-bold mb-1">Rôle</small>
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="badge bg-danger fs-6">Administrateur</span>
+                            {% elseif 'ROLE_GERANT' in user.roles %}
+                                <span class="badge bg-success fs-6">Gérant</span>
+                            {% elseif 'ROLE_AGILISTE' in user.roles %}
+                                <span class="badge bg-primary fs-6">Agiliste (Guichet)</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6">Client</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block uppercase fw-bold mb-1">Statut du compte</small>
+                            {% if user.statut == 'Actif' %}
+                                <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i> Actif</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6"><i class="bi bi-x-circle me-1"></i> Inactif</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block uppercase fw-bold mb-1">Numéro de Téléphone</small>
+                            <span class="fw-semibold text-dark">{{ user.telephone ?? 'Non renseigné' }}</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block uppercase fw-bold mb-1">Date d'inscription</small>
+                            <span class="fw-semibold text-dark">{{ user.dateCreation|date('d/m/Y à H:i') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Actions au bas du profil -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <a href="{{ path('app_admin_users') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Retour à la liste
+                    </a>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ path('app_admin_user_toggle', {id: user.id}) }}" class="btn btn-outline-warning text-dark rounded-pill px-3">
+                            {% if user.statut == 'Actif' %}
+                                <i class="bi bi-pause-circle me-1"></i> Désactiver
+                            {% else %}
+                                <i class="bi bi-play-circle me-1"></i> Activer
+                            {% endif %}
+                        </a>
+
+                        <a href="{{ path('app_admin_user_edit', {id: user.id}) }}" class="btn btn-primary rounded-pill px-4">
+                            <i class="bi bi-pencil-square me-1"></i> Modifier
+                        </a>
+
+                        {% if app.user and app.user.id != user.id %}
+                            <a href="{{ path('app_admin_user_delete', {id: user.id}) }}" 
+                               class="btn btn-danger rounded-pill px-4" 
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer définitivement ce profil ?');">
+                                <i class="bi bi-trash me-1"></i> Supprimer
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

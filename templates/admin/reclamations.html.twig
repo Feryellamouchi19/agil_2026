@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Réclamations - AGIL{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm border-0 rounded-3 mt-3">
+    <div class="card-header bg-warning text-dark p-3">
+        <h4 class="mb-0 fw-bold"><i class="bi bi-chat-square-dots me-2"></i>Gestion des Réclamations Clients</h4>
+    </div>
+
+    {# Search & Filter Bar #}
+    <div class="card-body border-bottom pb-3">
+        <form method="get" action="{{ path('app_admin_reclamations') }}" class="row g-2 align-items-end">
+            <div class="col-md-7">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-search me-1"></i>Recherche</label>
+                <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm shadow-none" placeholder="Sujet, description, nom du client, email...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-flag me-1"></i>Statut</label>
+                <select name="statut" class="form-select form-select-sm shadow-none">
+                    <option value="">Tous les statuts</option>
+                    <option value="Ouvert" {% if statut == 'Ouvert' %}selected{% endif %}>Ouvert</option>
+                    <option value="En cours" {% if statut == 'En cours' %}selected{% endif %}>En cours</option>
+                    <option value="Résolu" {% if statut == 'Résolu' %}selected{% endif %}>Résolu</option>
+                    <option value="Fermé" {% if statut == 'Fermé' %}selected{% endif %}>Fermé</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-warning btn-sm rounded-pill px-3 flex-fill fw-semibold">
+                    <i class="bi bi-funnel-fill me-1"></i>Filtrer
+                </button>
+                {% if q or statut %}
+                    <a href="{{ path('app_admin_reclamations') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-2" title="Réinitialiser">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+        {% if q or statut %}
+        <div class="mt-2">
+            <small class="text-muted"><i class="bi bi-info-circle me-1"></i>{{ reclamations|length }} réclamation(s) trouvée(s)</small>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card-body p-0">
+        {% if reclamations is empty %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-inbox display-4 mb-2 d-block"></i>
+                {% if q or statut %}
+                    Aucune réclamation ne correspond à votre recherche.
+                {% else %}
+                    Aucune réclamation enregistrée pour le moment.
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>Objet</th>
+                            <th>Statut</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in reclamations %}
+                        <tr>
+                            <td>{{ r.dateCreation|date('d/m/Y H:i') }}</td>
+                            <td>
+                                <strong>{{ r.client.prenom }} {{ r.client.nom }}</strong><br>
+                                <small class="text-muted">{{ r.client.email }}</small>
+                            </td>
+                            <td class="fw-semibold">{{ r.sujet }}</td>
+                            <td>
+                                {% if r.statut == 'Ouvert' %}
+                                    <span class="badge bg-danger">Ouvert</span>
+                                {% elseif r.statut == 'En cours' %}
+                                    <span class="badge bg-warning text-dark">En cours</span>
+                                {% elseif r.statut == 'Résolu' %}
+                                    <span class="badge bg-success">Résolu</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Fermé</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ path('app_admin_reclamation_reply', {id: r.id}) }}" class="btn btn-sm btn-primary rounded-pill px-3">
+                                    Répondre / Traiter
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

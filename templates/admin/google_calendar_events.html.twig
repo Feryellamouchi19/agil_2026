@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Google Calendar Events{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+  <h2 class="mb-4"><i class="bi bi-calendar-event me-2"></i>Événements Google Calendar</h2>
+  {% if events is empty %}
+    <div class="alert alert-warning">Aucun événement à afficher.</div>
+  {% else %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>Résumé</th>
+            <th>Début</th>
+            <th>Fin</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for event in events %}
+          <tr>
+            <td>{{ event.summary|default('Sans titre') }}</td>
+            <td>{{ event.start.dateTime|default(event.start.date)|date('d/m/Y H:i') }}</td>
+            <td>{{ event.end.dateTime|default(event.end.date)|date('d/m/Y H:i') }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+  <a href="{{ path('app_admin_dashboard') }}" class="btn btn-outline-secondary mt-3"><i class="bi bi-arrow-left"></i> Retour au tableau de bord</a>
+</div>
+{% endblock %}

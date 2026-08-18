@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agenda des Rendez-vous - Gérant AGIL{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm border-0 rounded-3 mt-3">
+    <div class="card-header bg-success text-white p-3">
+        <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-check me-2"></i>Agenda &amp; Rendez-vous Clients</h4>
+    </div>
+
+    {# Google Calendar Integration Bar #}
+    <div class="card-body bg-light border-bottom py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-google text-danger fs-4 me-2"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold">Intégration Google Calendar</h6>
+                    <small class="text-muted">
+                        {% if app.user.googleRefreshToken %}
+                            Votre compte Google Calendar est connecté. Les rendez-vous acceptés seront automatiquement ajoutés à votre agenda.
+                        {% else %}
+                            Connectez votre compte Google Calendar pour y synchroniser automatiquement les rendez-vous acceptés.
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+            <div>
+                {% if app.user.googleRefreshToken %}
+                    <a href="{{ path('disconnect_google_calendar') }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-box-arrow-left me-1"></i>Déconnecter mon agenda
+                    </a>
+                {% else %}
+                    <a href="{{ path('connect_google_calendar_start') }}" class="btn btn-sm btn-danger rounded-pill px-3 fw-semibold">
+                        <i class="bi bi-google me-1"></i>Connecter Google Calendar
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {# Search & Filter Bar #}
+    <div class="card-body border-bottom pb-3">
+        <form method="get" action="{{ path('app_admin_rendezvous') }}" class="row g-2 align-items-end">
+            <div class="col-md-7">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-search me-1"></i>Recherche</label>
+                <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm shadow-none" placeholder="Sujet, commentaire, nom du client, email...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-calendar2 me-1"></i>Statut</label>
+                <select name="statut" class="form-select form-select-sm shadow-none">
+                    <option value="">Tous les statuts</option>
+                    <option value="En attente" {% if statut == 'En attente' %}selected{% endif %}>En attente</option>
+                    <option value="Accepté" {% if statut == 'Accepté' %}selected{% endif %}>Accepté</option>
+                    <option value="Refusé" {% if statut == 'Refusé' %}selected{% endif %}>Refusé</option>
+                    <option value="Terminé" {% if statut == 'Terminé' %}selected{% endif %}>Terminé</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3 flex-fill fw-semibold">
+                    <i class="bi bi-funnel-fill me-1"></i>Filtrer
+                </button>
+                {% if q or statut %}
+                    <a href="{{ path('app_admin_rendezvous') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-2" title="Réinitialiser">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+        {% if q or statut %}
+        <div class="mt-2">
+            <small class="text-muted"><i class="bi bi-info-circle me-1"></i>{{ rendezvousList|length }} rendez-vous trouvé(s)</small>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card-body p-0">
+        {% if rendezvousList is empty %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                {% if q or statut %}
+                    Aucun rendez-vous ne correspond à votre recherche.
+                {% else %}
+                    Aucun rendez-vous prévu pour le moment.
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date &amp; Heure</th>
+                            <th>Client</th>
+                            <th>Sujet</th>
+                            <th>Commentaire</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rv in rendezvousList %}
+                        <tr>
+                            <td class="fw-bold">
+                                {{ rv.dateRv|date('d/m/Y') }} à {{ rv.heureRv|date('H:i') }}
+                            </td>
+                            <td>
+                                <strong>{{ rv.client.prenom }} {{ rv.client.nom }}</strong><br>
+                                <small class="text-muted">Tél : {{ rv.client.telephone ?? '-' }}</small>
+                            </td>
+                            <td>{{ rv.sujet }}</td>
+                            <td class="small text-muted">{{ rv.commentaire ?? '-' }}</td>
+                            <td>
+                                {% if rv.statut == 'En attente' %}
+                                    <span class="badge bg-warning text-dark">En attente</span>
+                                {% elseif rv.statut == 'Accepté' %}
+                                    <span class="badge bg-success">Accepté</span>
+                                {% elseif rv.statut == 'Refusé' %}
+                                    <span class="badge bg-danger">Refusé</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Terminé</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if rv.statut == 'En attente' %}
+                                    <a href="{{ path('app_admin_rv_status', {id: rv.id, status: 'Accepté'}) }}" class="btn btn-sm btn-success rounded-pill px-3">Accepter</a>
+                                    <a href="{{ path('app_admin_rv_status', {id: rv.id, status: 'Refusé'}) }}" class="btn btn-sm btn-outline-danger rounded-pill px-3">Refuser</a>
+                                {% elseif rv.statut == 'Accepté' %}
+                                    <a href="{{ path('app_admin_rv_status', {id: rv.id, status: 'Terminé'}) }}" class="btn btn-sm btn-dark rounded-pill px-3">Marquer Terminé</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

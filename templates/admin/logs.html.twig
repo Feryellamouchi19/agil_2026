@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Journaux de Connexion - Admin AGIL{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm border-0 rounded-3 mt-3">
+    <div class="card-header bg-dark text-white p-3">
+        <h4 class="mb-0 fw-bold"><i class="bi bi-journal-text me-2 text-warning"></i>Journaux de Connexion (Security Logs)</h4>
+    </div>
+
+    {# Search & Filter Bar #}
+    <div class="card-body border-bottom pb-3">
+        <form method="get" action="{{ path('app_admin_logs') }}" class="row g-2 align-items-end">
+            <div class="col-md-7">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-search me-1"></i>Recherche</label>
+                <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm shadow-none" placeholder="Email, adresse IP, navigateur...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-semibold text-muted mb-1"><i class="bi bi-shield me-1"></i>Statut</label>
+                <select name="statut" class="form-select form-select-sm shadow-none">
+                    <option value="">Tous les statuts</option>
+                    <option value="Succès" {% if statut == 'Succès' %}selected{% endif %}>Succès</option>
+                    <option value="Échec" {% if statut == 'Échec' %}selected{% endif %}>Échec</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-dark btn-sm rounded-pill px-3 flex-fill">
+                    <i class="bi bi-funnel-fill me-1"></i>Filtrer
+                </button>
+                {% if q or statut %}
+                    <a href="{{ path('app_admin_logs') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-2" title="Réinitialiser">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+        {% if q or statut %}
+        <div class="mt-2">
+            <small class="text-muted"><i class="bi bi-info-circle me-1"></i>{{ logs|length }} entrée(s) trouvée(s)</small>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date &amp; Heure</th>
+                        <th>Utilisateur</th>
+                        <th>Adresse IP</th>
+                        <th>Navigateur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.dateConnexion|date('d/m/Y H:i:s') }}</td>
+                        <td>
+                            <strong>{{ log.utilisateur.prenom }} {{ log.utilisateur.nom }}</strong><br>
+                            <small class="text-muted">{{ log.utilisateur.email }}</small>
+                        </td>
+                        <td><code>{{ log.adresseIp }}</code></td>
+                        <td class="small text-muted">{{ log.navigateur }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            <i class="bi bi-journal-x display-6 d-block mb-2"></i>
+                            {% if q or statut %}
+                                Aucun log ne correspond à votre recherche.
+                            {% else %}
+                                Aucun journal de connexion enregistré.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
