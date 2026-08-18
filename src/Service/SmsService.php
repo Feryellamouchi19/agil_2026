@@ -47,6 +47,12 @@ class SmsService
             $tempsEstime
         );
 
+        // Formatage du numéro de téléphone pour Twilio (E.164)
+        // Par défaut on ajoute +216 (Tunisie) si le + n'est pas présent
+        if (!str_starts_with($to, '+')) {
+            $to = '+216' . ltrim($to, '0');
+        }
+
         return $this->sendSms($to, $message);
     }
 

@@ -2,6 +2,19 @@
 
 {% block title %}Espace Client - AGIL Queue{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <style>
+        #agil-map {
+            height: 400px;
+            width: 100%;
+            border-radius: 10px;
+            z-index: 1;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="row mt-3 g-4">
     <!-- Bienvenue Client -->
@@ -49,6 +62,18 @@
         </div>
     </div>
 
+    <!-- Carte des Stations AGIL -->
+    <div class="col-12">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-geo-alt-fill me-2"></i>Stations AGIL Disponibles</h5>
+                <span class="badge bg-light text-dark border">Tunisie</span>
+            </div>
+            <div class="card-body p-0">
+                <div id="agil-map"></div>
+            </div>
+        </div>
+    </div>
     <!-- Tickets Actifs -->
     <div class="col-md-6">
         <div class="card shadow-sm border-0 rounded-4 h-100">
@@ -168,4 +193,53 @@
         </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Coordonnées de base pour centrer sur la Tunisie
+        var map = L.map('agil-map').setView([36.8065, 10.1815], 7); // Centré sur Tunis, zoom 7
+
+        // Ajout du fond de carte OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18
+        }).addTo(map);
+
+        // Icone personnalisée pour AGIL (optionnel, sinon utilise l'icône bleue par défaut)
+        var agilIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-gold.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        // Données statiques des stations AGIL majeures
+        var stations = [
+            { nom: "AGIL Tunis - Charguia", lat: 36.8450, lng: 10.2078, address: "Zone Industrielle Charguia, Tunis", open: "24/7" },
+            { nom: "AGIL Sousse - Akouda", lat: 35.8752, lng: 10.5694, address: "Route de Tunis, Akouda", open: "24/7" },
+            { nom: "AGIL Sfax - Taparura", lat: 34.7432, lng: 10.7712, address: "Taparura, Sfax", open: "06:00 - 22:00" },
+            { nom: "AGIL Bizerte - Zarzouna", lat: 37.2661, lng: 9.8787, address: "Zarzouna, Bizerte", open: "24/7" },
+            { nom: "AGIL Gabès - Centre", lat: 33.8820, lng: 10.1008, address: "Centre-ville, Gabès", open: "05:00 - 23:00" }
+        ];
+
+        // Ajouter les marqueurs sur la carte
+        stations.forEach(function(station) {
+            var marker = L.marker([station.lat, station.lng], {icon: agilIcon}).addTo(map);
+            
+            // Contenu de l'info-bulle (popup)
+            var popupContent = `
+                <div style="font-family: 'Inter', sans-serif;">
+                    <h6 style="color: #0d6efd; font-weight: bold; margin-bottom: 5px;">${station.nom}</h6>
+                    <p style="margin-bottom: 2px;"><i class="bi bi-geo-alt"></i> ${station.address}</p>
+                    <p style="margin-bottom: 0;"><i class="bi bi-clock"></i> Ouvert : ${station.open}</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary mt-2 w-100" style="font-size: 0.75rem;">Itinéraire</a>
+                </div>
+            `;
+            marker.bindPopup(popupContent);
+        });
+    });
+</script>
 {% endblock %}
